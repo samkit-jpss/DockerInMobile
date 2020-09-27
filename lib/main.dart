@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 import 'package:splashscreen/splashscreen.dart';
+
 import 'package:http/http.dart' as http;
 
 void main() {
@@ -12,20 +13,30 @@ void main() {
   );
   FlutterStatusbarcolor.setStatusBarColor(Colors.blue.shade900);
 }
+  String cmd;
+  var r;
+  var url;
+  var response;
 
-String cmd;
-web(i) async {
-  var url = "http://192.168.29.26/cgi-bin/web.py?x=$i";
-  var response = await http.get(url);
-  print(response.body);
-}
 
 class MyApp extends StatefulWidget {
+  
+
   @override
   _MyAppState createState() => new _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  String cmd;
+  var r;
+  void myweb(i) async {
+  url = "http://192.168.29.26/cgi-bin/web.py?q=$i";
+  response = await http.get(url);
+  setState(() {
+      r = response.body;
+  });
+  
+}
   @override
   Widget build(BuildContext context) {
     return new SplashScreen(
@@ -36,7 +47,7 @@ class _MyAppState extends State<MyApp> {
             fontSize: 20.0,
             color: Colors.blue.shade900),
       ),
-      seconds: 15,
+      seconds: 3,
       navigateAfterSeconds: AfterSplash(),
       image: new Image.asset('images/docker.gif'),
       backgroundColor: Colors.blue.shade50,
@@ -47,7 +58,25 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class AfterSplash extends StatelessWidget {
+
+class AfterSplash extends StatefulWidget {
+  AfterSplash({Key key}) : super(key: key);
+
+  @override
+  _AfterSplashState createState() => _AfterSplashState();
+}
+
+class _AfterSplashState extends State<AfterSplash> {
+  String cmd;
+  var r;
+  void myweb(i) async {
+  url = "http://192.168.29.26/cgi-bin/web.py?q=$i";
+  response = await http.get(url);
+  setState(() {
+      r = response.body;
+  });
+  
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,10 +102,7 @@ class AfterSplash extends StatelessWidget {
             Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(""),
-                  Text(""),
-                 Text(""),      
-                  Text(""),
+                  SizedBox(height: 100),
                   Center(
                     child: Text(
                       "Docker at your service : ",
@@ -105,15 +131,18 @@ class AfterSplash extends StatelessWidget {
                       borderRadius: BorderRadius.circular(25),
                     ),
                     onPressed: () {
-                      web(cmd);
+                      myweb(cmd);
                     },
                     child: Text("RUN"),
                     textColor: Colors.white,
-                  )
+                  ),
+                  Text(r ?? "Output will display here",style:TextStyle(fontSize: 10, fontWeight: FontWeight.bold,backgroundColor:Colors.blue[900] , color: Colors.white),),
                 ])
           ],
         ),
       ),
     );
   }
+
+  
 }
